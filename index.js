@@ -41,9 +41,6 @@ app.use((req, res) => res.status(404).json(
   { error: 'Recurso não encontrado' },
 ));
 
-
-const port = 7000;
-
-app.listen(port, () => {
-  console.log(`Running on ${port}`)
+app.listen(process.env.API_PORT, () => {
+  console.log(`Running on ${process.env.API_PORT}`)
 })
