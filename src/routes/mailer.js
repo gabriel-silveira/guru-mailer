@@ -2,32 +2,32 @@ const express     = require('express');
 const routes      = express.Router();
 const nodemailer  = require('nodemailer');
 
-routes.get('/', async (req, res) => {
+routes.post('/', async (req, res) => {
   try {
+    const { to, subject, html } = req.body;
+
     const options = {
-      host: 'smtp.hostinger.com.br',
-      port: 587,
+      host: process.env.MAILER_SMTP,
+      port: process.env.MAILER_PORT,
       secure: false,
       auth: {
         user: process.env.MAILER_USER,
         pass: process.env.MAILER_PASSWORD
-      }
+      },
+      sendmail: true
     }
   
-    console.log(options)
-  
-    const transporter = nodemailer.createTransport(options)
+    const transporter = nodemailer.createTransport(options);
   
     const info = await transporter.sendMail({
-      from: `"Gabriel Silveira" <${process.env.MAILER_USER}>`, // sender address
-      to: `gabrielsilveira.web@gmail.com, ${process.env.MAILER_USER}`, // list of receivers
-      subject: 'Hello', // Subject line
-      text: 'Hello world?', // plain text body
-      html: '<b>Hello world?</b>' // html body
-    })
-  
-    console.log(info);
-    res.status(200).json(info)
+      from: process.env.MAILER_USER, // sender address
+      to: to ? to : 'gabrielsilveira.web@gmail.com', // list of receivers
+      subject, // Subject line
+      // text: 'Hello world?', // plain text body
+      html // html body
+    });
+    
+    res.status(200).json(info);
   } catch (error) {
     res.status(500).json(error);
   }
